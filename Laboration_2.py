@@ -97,7 +97,7 @@ def euler_forward_h(f, a, b, y0, h):
     # Iterate med Eulers framåt. Formler EF.1
     # Modul 6 Del 2
     for k in range(n):
-        y[k+1] = y[k] + h*dydt(t[k], y[k])
+        y[k+1] = y[k] + h*f(t[k], y[k])
 
     return t, y
 
@@ -123,17 +123,25 @@ def y_exakt(t):
     
     
 def main_F1b():
-    T = 1.2
     a = 0
-    b = T
-    y0 = 0
+    b = 1.2
+    y0 = 1
     h = 0.1
     # a)
     ta, ya = euler_forward_h(dydt, a, b, y0, h)
+    print("ya")
+    print(ya[-1])
+    print("ta")
+    print(ta[-1])
+    yexakt = y_exakt(ta[-1])
+    Ek = np.abs(ya[-1]-yexakt) 
+    print(Ek)
     #plotta_solution(ta,ya,h)
-    get_table(ta, ya, h)
+    #get_table(ta, ya, h)
+    
     
     #f = lambda t, y: -y      #Definera en lambda funktion (=inline function)
+    
     sol = integrate.solve_ivp(dydt,[0,2],[0],t_eval=np.linspace(0,2,50))
     print(" ")
     print(sol.t)
@@ -159,7 +167,7 @@ main_F1b()
 #Gör en konvergensstudie genom att ha h och beräkna numerisk lösning med Eulers metod framåt
 #Spara lösningen för varje h i y(T)
 
-h = np.array([0.2, 0.1, 0.05, 0.025, 0.0125])
+#h = np.array([0.2, 0.1, 0.05, 0.025, 0.0125])
 
 #F2b)
 #Beräkna felen ek = |yk(T) − yexakt(T)| och verifiera att felen blir enligt facit
