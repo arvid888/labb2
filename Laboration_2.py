@@ -7,6 +7,11 @@ Created on Tue Sep 23 19:31:38 2025
 """
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
+import os
+import scipy.integrate as integrate
+
+
 
 
 
@@ -140,6 +145,9 @@ def main_F1b():
     ax.tick_params(labelsize=14)
     plt.show()
 
+main_F1a()
+main_F1b()
+
 #F1c)
 #Verifiera att felet blir ek = |yk(T)−yexakt(T)| ≈ 0.0188
 
@@ -150,6 +158,8 @@ def main_F1b():
 #F2a)
 #Gör en konvergensstudie genom att ha h och beräkna numerisk lösning med Eulers metod framåt
 #Spara lösningen för varje h i y(T)
+
+h = np.array([0.2, 0.1, 0.05, 0.025, 0.0125])
 
 #F2b)
 #Beräkna felen ek = |yk(T) − yexakt(T)| och verifiera att felen blir enligt facit
