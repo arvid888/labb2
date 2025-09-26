@@ -85,7 +85,7 @@ def dydt(t, y):
 
 def euler_forward_h(f, a, b, y0, h):
 
-    n = int(np.abs(b-a)/h)
+    n = round(np.abs(b-a)/h)
     print(n)
     # Diskretiseringsteg: Generate n+1 friddpunkter
     t = np.linspace(a, b, n+1)
