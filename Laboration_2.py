@@ -42,11 +42,8 @@ Created on Tue Sep 23 19:31:38 2025
 #T1a)
 #Gör en differentialekvation till en LCR krets genom att skriva om ekvation 2 till y´= F(t,y) 
 #Liknande frågor kommer i elektroteknik
-def omskrivning_av_diffekvation(t,y):
-    dU/dt = F(t,U)
-    U(t0)=U0
-    
-def euler_framat(t,y): #föreläsningsanteckningarna modul 7 (del 1 av 4) räkneexempel 7.2
+
+print("hej")
 
 #Exempel: Om det är 3:e ordningens differentiaekvaiton (det finns åtminstånde en tredjederivata) så är det 3 stycken ekvationer men f(t,u1,u2,u3).
 #f(t,u_vektor) där u_vektor är (u1,u2,u3).
