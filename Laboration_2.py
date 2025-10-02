@@ -303,6 +303,40 @@ main_T1_c()
 # T1d)
 # Dela tidsintervallet och plotta lösningen för varje värde på N.
 
+def euler_system_forward_h(F, t0, tend, U0, h):
+    
+    """ 
+    Implements Euler's method forward for a system of ODEs.
+    
+    Parameters:
+        F       : function(t, U) → dU/dt (returns numpy array)
+        t0      : initial time
+        tend    : Final time
+        U0      : initial state (numpy array)
+        h       : step size
+    
+    Returns:
+        t_values : numpy array of time points
+        y_values : numpy array of state values (n_steps+1 x len(y0))
+    """
+    
+    n_steps = int(np.abs(tend-t0)/h)
+    y0 = np.array(U0, dtype=float)
+    t_values = np.zeros(n_steps+1)
+    y_values = np.zeros((n_steps+1, len(y0)))
+
+    t_values[0] = t0
+    y_values[0] = U0
+
+    for i in range(n_steps):
+        y_values[i+1] = y_values[i] + h * F(t_values[i], y_values[i])
+        t_values[i+1] = t_values[i] + h
+
+    return t_values, y_values
+
+
+lösning_euler = euler_system_forward_h(diffekvation_2, t0, tend, U0, h)
+
 # T1e)
 # För dämpad svänging, utför en konvergensstudie för Euler framåt, nogrannhetsordning empiriskt
 
