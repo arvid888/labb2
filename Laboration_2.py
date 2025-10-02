@@ -7,6 +7,7 @@ Created on Tue Sep 23 19:31:38 2025
 
 
 Hejsan molly!
+Hejsan Arvid! :D
 """
 import numpy as np
 import matplotlib.pyplot as plt
