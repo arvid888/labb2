@@ -4,6 +4,9 @@
 Created on Tue Sep 23 19:31:38 2025
 
 @author: mollyfreeman
+
+
+Hejsan molly!
 """
 import numpy as np
 import matplotlib.pyplot as plt
