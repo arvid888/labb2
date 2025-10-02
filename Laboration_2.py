@@ -12,7 +12,7 @@ Hejsan Arvid! :D
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-#import os
+# import os
 import scipy.integrate as integrate
 
 
@@ -186,8 +186,7 @@ def main_f2():
         Ek = np.abs(ya[-1]-yexakt)
         fel_lista.append(Ek)
         print("för h = ", h, "så är lösningen", ya[-1], "och felet Ek = ", Ek)
-        
-    
+
     print(" \nuppgift f2c, nogranhetsordningarna är:")
 
     p_lista = []
@@ -198,8 +197,8 @@ def main_f2():
         p = np.log(ek_h / ek_h_halverad) / np.log(2)
         p_lista.append(p)
         print(p)
-        
-    #print(p_lista)
+
+    # print(p_lista)
 
 
 main_f2()
@@ -240,10 +239,66 @@ print("hej")
 
 
 # T1b)
+
+def diffekvation_2(t, y, R, L, C):
+    q = y[0]  # detta är för solve_ivp
+    i = y[1]  # första derivatan
+
+    q_prim = i
+    i_prim = -(R/L)*i-(1/L*C)*q
+
+    return [q_prim, i_prim]
 # t, y, R, L, C är inparametrar. Funktionen returnerar vektorn F(t, y). Man ska inte kunna använda ode-lösare solve_ivp
+
+def my_ode(t, y):
+    """
+    Definierar den ordinära differentialekvationen dy/dt = -2y.
+    """
+    return -2 * y
+
+
+# 2. Definiera tidsintervall och initialvillkor
+t_span = (0, 5)
+y0 = [1]
+
+# 3. Löser ekvationen med solve_ivp
+sol = integrate.solve_ivp(my_ode, t_span, y0, dense_output=True)
+
+
+
+
+
+def lös_ODE(R,L,C,t_span,Q0):
+
+    y0 = [Q0, 0]
+
+    F = integrate.solve_ivp(diffekvation_2, t_span, y0, args=(R,L,C))
+    return F
+
+
+
+
 
 # T1c)
 # Lös systemet med solve_ivp och metoden RK45 för dämpad  och odämpad svängning
+
+
+
+def main_T1_c():
+
+    
+    t_span = [0, 20]
+    Q0 = 1
+    L = 2
+    C = 0.5
+    R_dämpad = 1
+    R_odämpad = 0
+    lösning_dämpad = lös_ODE(R_dämpad,L,C,t_span,Q0)
+    lösning_odämpad = lös_ODE(R_odämpad,L,C,t_span,Q0)
+    print('lösningen för dämpad är ', lösning_dämpad)
+    print('lösningen för odämpad är ', lösning_odämpad)
+    
+main_T1_c()
 
 # T1d)
 # Dela tidsintervallet och plotta lösningen för varje värde på N.
