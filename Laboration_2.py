@@ -247,7 +247,7 @@ def diffekvation_2(t, y, R, L, C):
     q_prim = i
     i_prim = -(R/L)*i-(1/L*C)*q
 
-    return [q_prim, i_prim]
+    return np.array([q_prim, i_prim])
 # t, y, R, L, C är inparametrar. Funktionen returnerar vektorn F(t, y). Man ska inte kunna använda ode-lösare solve_ivp
 
 
@@ -298,7 +298,7 @@ main_T1_c()
 # Dela tidsintervallet och plotta lösningen för varje värde på N.
 
 
-def euler_system_forward_h(F, t0, tend, U0, h):
+def euler_system_forward_h(F, t0, tend, U0, h,R,L,C):
     """ 
     Implements Euler's method forward for a system of ODEs.
 
@@ -323,14 +323,75 @@ def euler_system_forward_h(F, t0, tend, U0, h):
     y_values[0] = U0
 
     for i in range(n_steps):
-        y_values[i+1] = y_values[i] + h * F(t_values[i], y_values[i])
+        y_values[i+1] = y_values[i] + h * F(t_values[i], y_values[i],R,L,C)
         t_values[i+1] = t_values[i] + h
 
     return t_values, y_values
 
 
-lösning_euler = euler_system_forward_h(diffekvation_2, t0, tend, U0, h)
+def plotta_T1_d(x_värden, y_värden,N,h,exakt_lösning):
+    
+    fig, ax = plt.subplots()
+    # sol.y är en matris, lösningen ges i första raden
+    ax.plot(x_värden, y_värden)
+    ax.plot(exakt_lösning.t, exakt_lösning.y[0], label='RK45 (Exakt)', linestyle='--')
+    ax.set_xlabel('t för N = ' +str(N) + ' och h = ' + str(h), fontsize=14)
+    ax.set_ylabel('y(t)', fontsize=14)
+    ax.tick_params(labelsize=14)
+    plt.show()
+ 
 
+def T1_d():
+    N_lista = np.array([20,40,80,160])
+    t_intervall = [0,20]
+    t = t_intervall[1] - t_intervall[0]
+    t0 = t_intervall[0]
+    tend = t_intervall[1]
+    U0 = np.array([1,0])
+    R = 1
+    L = 2
+    C = 0.5
+    for N in N_lista:
+        h = t/N
+        lösning_euler = euler_system_forward_h(diffekvation_2, t0, tend, U0, h,R,L,C)
+        #print("för N = ", N, "blir steglängden h= ", h, "och lösningen blir ", lösning_euler)
+        exakt_lösning = lös_ODE(R, L, C, t_intervall, U0[0])
+        plotta_T1_d(lösning_euler[0], lösning_euler[1],N,h,exakt_lösning)
+    
+    
+def T1_e():
+    N_lista = np.array([80,160,320,640])
+    t_intervall = [0,20]
+    t = t_intervall[1] - t_intervall[0]
+    t0 = t_intervall[0]
+    tend = t_intervall[1]
+    U0 = np.array([1,0])
+    R = 1
+    L = 2
+    C = 0.5
+    föregående_fel = 0
+    for N in N_lista:
+        h = t/N
+        lösning_euler = euler_system_forward_h(diffekvation_2, t0, tend, U0, h,R,L,C)
+        exakt_lösning = lös_ODE(R, L, C, t_intervall, U0[0])
+        exakta_y_värden = exakt_lösning.y
+        felet = np.abs(lösning_euler[1][-1][0] - exakta_y_värden[0][-1]) #eftersom lösning_euler är en tupel
+        print("felet för N = ", N,"och h = ", h, "är Ek = ", felet)
+        
+        
+         
+        if föregående_fel !=0:
+            nogrannhetsordning = np.log2(np.abs(föregående_fel / felet))
+            print("nogrannhetsordning = ", nogrannhetsordning)
+        
+        föregående_fel = felet
+T1_d()   
+T1_e()
+
+    
+
+
+    
 # T1e)
 # För dämpad svänging, utför en konvergensstudie för Euler framåt, nogrannhetsordning empiriskt
 
