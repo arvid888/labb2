@@ -250,6 +250,7 @@ def diffekvation_2(t, y, R, L, C):
     return [q_prim, i_prim]
 # t, y, R, L, C är inparametrar. Funktionen returnerar vektorn F(t, y). Man ska inte kunna använda ode-lösare solve_ivp
 
+
 def my_ode(t, y):
     """
     Definierar den ordinära differentialekvationen dy/dt = -2y.
@@ -265,61 +266,54 @@ y0 = [1]
 sol = integrate.solve_ivp(my_ode, t_span, y0, dense_output=True)
 
 
-
-
-
-def lös_ODE(R,L,C,t_span,Q0):
+def lös_ODE(R, L, C, t_span, Q0):
 
     y0 = [Q0, 0]
 
-    F = integrate.solve_ivp(diffekvation_2, t_span, y0, args=(R,L,C))
+    F = integrate.solve_ivp(diffekvation_2, t_span, y0, args=(R, L, C))
     return F
-
-
-
 
 
 # T1c)
 # Lös systemet med solve_ivp och metoden RK45 för dämpad  och odämpad svängning
 
 
-
 def main_T1_c():
 
-    
     t_span = [0, 20]
     Q0 = 1
     L = 2
     C = 0.5
     R_dämpad = 1
     R_odämpad = 0
-    lösning_dämpad = lös_ODE(R_dämpad,L,C,t_span,Q0)
-    lösning_odämpad = lös_ODE(R_odämpad,L,C,t_span,Q0)
+    lösning_dämpad = lös_ODE(R_dämpad, L, C, t_span, Q0)
+    lösning_odämpad = lös_ODE(R_odämpad, L, C, t_span, Q0)
     print('lösningen för dämpad är ', lösning_dämpad)
     print('lösningen för odämpad är ', lösning_odämpad)
-    
+
+
 main_T1_c()
 
 # T1d)
 # Dela tidsintervallet och plotta lösningen för varje värde på N.
 
+
 def euler_system_forward_h(F, t0, tend, U0, h):
-    
     """ 
     Implements Euler's method forward for a system of ODEs.
-    
+
     Parameters:
         F       : function(t, U) → dU/dt (returns numpy array)
         t0      : initial time
         tend    : Final time
         U0      : initial state (numpy array)
         h       : step size
-    
+
     Returns:
         t_values : numpy array of time points
         y_values : numpy array of state values (n_steps+1 x len(y0))
     """
-    
+
     n_steps = int(np.abs(tend-t0)/h)
     y0 = np.array(U0, dtype=float)
     t_values = np.zeros(n_steps+1)
