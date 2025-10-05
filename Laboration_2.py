@@ -14,8 +14,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import os
 import scipy.integrate as integrate
-import scipy.linalg
-from scipy.sparse import diags #diags är en funktion
+#import scipy.linalg
+#from scipy.sparse import diags #diags är en funktion
 
 
 """Följande är svar på fråga F1"""
@@ -223,25 +223,6 @@ main_f2()
 
 print("hej")
 
-# Exempel: Om det är 3:e ordningens differentiaekvaiton (det finns åtminstånde en tredjederivata) så är det 3 stycken ekvationer men f(t,u1,u2,u3).
-# f(t,u_vektor) där u_vektor är (u1,u2,u3).
-# u_vektor' = (u1',u2',u3') = (u2, u3, y''') = (u2,u3, )
-# u1 = y
-# u1' = u2 = y'
-# u2' = u3 = y''
-# y''' = -0.5y*y''-(y')^2+sin(x)
-# y(0)=
-# u(0)=(0,1,2)
-# man byter ut
-# man kan inte lösa högre ordningens differentialekvation. Rk4, Euler framåt för system, Euler bakår för system.
-# Kan man inte skriva om det på den formen så är det inte bra.
-# Man måste kunna skriva om ett system av ekvationer.
-# Den högsta ordningens DE på ena sidan och resten på andra sidan.
-# Döp om det! y = u1 som standard. y' = u2. uvektorn = (u1,u2). u' = fvektor(t,uvekotn). uvektor' = (u1'.u2')= (u2, u3)
-# Givet att man hittade rätt svar, så
-# t0 = det som finns i begynnelsevillkorens insida.
-
-
 # T1b)
 
 def diffekvation_2(t, y, R, L, C):
@@ -434,7 +415,6 @@ T1_e()
 # -----------------------------------------------------------------------------------------------------------------
 """Följande är svar på fråga T1"""
 # T2a, b och c) KLAR
-
 def q(x): #Enligt uppgiften
     return 50 * (x**3) * np.log(x + 1)
 
@@ -458,8 +438,8 @@ def stavens_temperatur(N, q, k, TL, TR, L):
     mittersta_diagnonalen = (-2*k/h**2) *np.eye(N-1) #(-2k / h**2) på mittersta diagonalen, 
     nedre_diagnonalen = (k/h**2) * np.diag(np.ones((N-2), dtype=None),-1) #https://numpy.org/doc/2.2/reference/generated/numpy.ones.html
     ovre_diagnonalen = (k/h**2)* np.diag(np.ones((N-2), dtype=None),1) 
-    A = np.round(mittersta_diagnonalen + nedre_diagnonalen + ovre_diagnonalen) #A har 3 diagonaler, i formen av (N-1)*(N-1)
-    print("A:\n", A)
+    A = np.round(mittersta_diagnonalen + nedre_diagnonalen + ovre_diagnonalen) 
+    #A har 3 diagonaler, i formen av (N-1)*(N-1)
     
     #Nu ska x_vektorn skrivas
     x_j = np.linspace(0+h, L-h, N-1) 
@@ -467,14 +447,12 @@ def stavens_temperatur(N, q, k, TL, TR, L):
     #x_j elementen står för punkterna där vi ska approximera temperaturen
     #np.linspace(startpunkt, slutpunkt, antal x_j punkter som vi ska räkna ut)
     #https://numpy.org/devdocs//reference/generated/numpy.linspace.html 
-    print("x värden:\n", x_j)
     
     #Nu ska b_vektorn skrivas
     b = q(x_j).astype(float)
     #Högerledsvektorn b har längden (N-1)
     b[0] -= (k / h**2) * TL 
     b[-1] -= (k / h**2) * TR
-    print("b värden:\n", b)
     
     #Lös ut T inre och 
     T_ej_med_randvillkor = np.linalg.solve(A,b)
@@ -482,15 +460,27 @@ def stavens_temperatur(N, q, k, TL, TR, L):
     x = np.linspace(0, L, N+1) #alla x_värden, dvs randvärderna är inkluderade
     T = np.concatenate(([TL],T_ej_med_randvillkor,[TR])) #alla T_värden, dvs randvärderna är inkluderade
     
-    return A, x, b, T 
+    return A, x_j, x, b, T
 
 #printa temperaturerna i en lista
-A, x, b, T = stavens_temperatur(N, q, k, TL, TR, L)
-print("Stavens temperatur beräknat på",N+1,"stycken punkter är\n", T)
+A, x_j, x, b, T = stavens_temperatur(N, q, k, TL, TR, L)
+print("A:\n", A)
+print("x värden:\n", x_j)
+print("b värden:\n", b)
+print("Stavens temperatur beräknat på",N+1,"stycken punkter är: \n",T)
+
+
+
+
+
+
+
+
+
 
 # T2d) KLAR
 #Få fram A, x och b för N=100 istället.
-A_T2d, x_T2d, b_T2d, T_T2d = stavens_temperatur(100, q, k, TL, TR, L)
+A_T2d, x_j_T2d, x_T2d, b_T2d, T_T2d = stavens_temperatur(100, q, k, TL, TR, L)
 #A_T2d systemmatrisen 99*99 för de inre punkterna
 #x_T2d alla x koordinaterna där randvärderna är inkluderade
 #b_T2d b för de inre punkterna
@@ -501,7 +491,7 @@ def plotta_stavens_temperatur(x,T):
     #x = vad som ska vara på x-axeln
     #T = vad som ska vara på y-axeln (som ska vara temperaturen)
     plt.plot(x, T, '-o', markersize=2.5) #markersize ändrar punkternas storlek
-    plt.title("Stavens temperaturfördelning (N=100)")
+    plt.title("Stavens temperaturfördelning (N = 100)")
     plt.xlabel("x")
     plt.ylabel("T(x), temperaturen")
     plt.grid(True) #Visar hjälplinjerna
@@ -513,23 +503,75 @@ plotta_stavens_temperatur(x_T2d,T_T2d)
 for idx, element in enumerate(x_T2d):
     #https://stackoverflow.com/questions/522563/how-can-i-access-the-index-value-in-a-for-loop
     if element == 0.2:
-        print("Stavens temperatur i x=0.2 är", T_T2d[idx])
+        print("Stavens temperatur i x = 0.2 är", T_T2d[idx])
 
-# T2e)
+
+
+
+
+
+
+
+
+
+# T2e) KLAR
+#Antal delintervall i lista, börja på N=50
+N_T2e = [50, 100, 200, 400, 800, 1600]
+
+#Jämförelsevärde T(0.7) = 1.6379544 enligt uppgift
+T_jamforelsevarde_noll_komma_sju_avrundat= 1.6379544
 
 # Gör konvergensstudie med steglängdshalvering.
+felen = [] #tom lista som fyller på för att beräkna p
 
-#Antal delintervall i lista, börja på N=50
-N = [50, 100, 200, 400, 800, 1600]
+#Gör kolumnrubriken
+print(" \n  N     h        T(0.7)     |felet|")
 
-T_jamforelsevarde_noll_sju_avrundat= 1.6379544
+#Lägg till värden i felen
+for N in N_T2e: #för N i listan N_T2e
+
+    #Skapa en matris A och b, alla x värden och T värden för varje element i N_T2e genom att anropa funktionen stavens_temperatur
+    A, x_j, x, b, T = stavens_temperatur(N, q, k, TL, TR, L) 
+    
+    #ibland finns inte x = 0.7 ooch det löses
+    T_noll_komma_sju_approxiamtion = np.interp(0.7, x, T)
+    #interpolationden gör en linje mellan approximationspunktern nära x = 0.7 för att x värdet ska bli exakt 0.7
+    #https://numpy.org/doc/2.3/reference/generated/numpy.interp.html 
+    
+    #Skriv absoluta felet
+    varje_fel = abs(T_noll_komma_sju_approxiamtion - T_jamforelsevarde_noll_komma_sju_avrundat) 
+    
+    #appendar varje absoluta fel till listan felen
+    felen.append(varje_fel) 
+    
+    print(f"{N:4}  {L/N:.3e}  {T_noll_komma_sju_approxiamtion:.6}  {varje_fel:.3e}")
+    #{N:4} N värden ska ta upp 4 "fält" i bredd. f"{N:4}" gör att det inte behöver stå format(N, "4")
+    #https://www.w3schools.com/python/ref_string_format.asp
+    #{L/N:.3e} tre decimalers nogrannhet 
+    #e = 10^(ett tal som ska anges)
+    #{T_noll_komma_sju_approxiamtion:.6} temperaturen för varje värde på N_T2e avrundat till sex decimalers nogrannhet
+    #{varje_fel:.3e} tre decimaler där man använder e
+
+#Skriv nogrannhetsordningen
+print("\nNogrannhetsordning p ges av:")
+for i in range(len(N_T2e)-1): #vi sätter minus 1 för att garantera att det finns ett element som heter felen[i+1]
+    if felen[i+1] == 0:
+        print("Det går inte att dela med noll")
+    else:
+        p = np.log(felen[i] / felen[i+1]) / np.log(2)
+        print("Vi jämför värden från", N_T2e[i], "och", N_T2e[i+1], "st delintervall som ger p ≈",p)
+        #nogrannhetsordningen verkar stämma väl överens med teorin. 
 
 
-# T2f)
-# Testa att ändra randvillkoren och se om det ändras.
 
 
 
 
 
+
+
+# T2f) KLAR
+#Testa att ändra randvillkoren TL och TR och se om det ändras.
+#Vi ser att det ändras
+#Det är ändå en konvex struktur.
 
