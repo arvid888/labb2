@@ -12,14 +12,18 @@ Hejsan Arvid! :D
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-# import os
+import os
 import scipy.integrate as integrate
+import scipy.linalg
+from scipy.sparse import diags #diags är en funktion
 
 
 """Följande är svar på fråga F1"""
 # F1a)
 # Vi ska rita riktiningsfältet för DE och lägg till den exakta lösningen till ekvationen
 
+def console_clear():
+    os.system('clear')
 
 def plot_quiver(x_range, y_range, u_func, v_func, density=20, scale=1, title="Quiver Plot"):
     """
@@ -396,23 +400,136 @@ T1_e()
 # För dämpad svänging, utför en konvergensstudie för Euler framåt, nogrannhetsordning empiriskt
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # -----------------------------------------------------------------------------------------------------------------
 """Följande är svar på fråga T1"""
-# T2a)
-# Temperaturfördelningen ska diskretiseras med centrala finita differenser för N=4.
-# Skriv systemmatrisen och Hl med alla element.
+# T2a, b och c) KLAR
 
-# T2b)
-# Skriv samma men för generellt N.
+def q(x): #Enligt uppgiften
+    return 50 * (x**3) * np.log(x + 1)
 
-# T2c)
-# Returnera systemmatrisen A och högerledet.
+#Variabler
+N = 4 #här kan man ändra, tex 4, 100 osv enligt uppgiften
+k = 2 #konstant enligt uppgiften
+TL = 2 #ska vara 2 enligt uppgiften, men kan ändras enligt uppgiften
+TR = 2 #ska vara 2 enligt uppgiften, men kan ändras enligt uppgiften
+L = 1 #konstant enligt uppgiften
 
-# T2d)
-# Lös randvärdesproblemet med N=100.
+def stavens_temperatur(N, q, k, TL, TR, L): 
+    #N = Antal delintervall, dvs N+1 punkter finns totalt men vi ska räkna ut N-1 punkter 
+    #q = funktionen som ska vara q(x) enligt uppgiften
+    #k = stavens värmeledningsförmåga, en skalär
+    #TL = randvillkor vid x=0, 
+    #TR = randvillkor vid x=L
+    #L = längd på staven
+    h = (L - 0) / N #steglängden ((b-a)/N ) = ( (slutpunkt - startpunkt)/ N antal delintervall ) är 0.25 om N=4
+   
+    #Nu ska A skrivas
+    mittersta_diagnonalen = (-2*k/h**2) *np.eye(N-1) #(-2k / h**2) på mittersta diagonalen, 
+    nedre_diagnonalen = (k/h**2) * np.diag(np.ones((N-2), dtype=None),-1) #https://numpy.org/doc/2.2/reference/generated/numpy.ones.html
+    ovre_diagnonalen = (k/h**2)* np.diag(np.ones((N-2), dtype=None),1) 
+    A = np.round(mittersta_diagnonalen + nedre_diagnonalen + ovre_diagnonalen) #A har 3 diagonaler, i formen av (N-1)*(N-1)
+    print("A:\n", A)
+    
+    #Nu ska x_vektorn skrivas
+    x_j = np.linspace(0+h, L-h, N-1) 
+    #x_j värden skrivs i en lista, där indexet j = [1, 2, 3, …, (N-1))]
+    #x_j elementen står för punkterna där vi ska approximera temperaturen
+    #np.linspace(startpunkt, slutpunkt, antal x_j punkter som vi ska räkna ut)
+    #https://numpy.org/devdocs//reference/generated/numpy.linspace.html 
+    print("x värden:\n", x_j)
+    
+    #Nu ska b_vektorn skrivas
+    b = q(x_j).astype(float)
+    #Högerledsvektorn b har längden (N-1)
+    b[0] -= (k / h**2) * TL 
+    b[-1] -= (k / h**2) * TR
+    print("b värden:\n", b)
+    
+    #Lös ut T inre och 
+    T_ej_med_randvillkor = np.linalg.solve(A,b)
+
+    x = np.linspace(0, L, N+1) #alla x_värden, dvs randvärderna är inkluderade
+    T = np.concatenate(([TL],T_ej_med_randvillkor,[TR])) #alla T_värden, dvs randvärderna är inkluderade
+    
+    return A, x, b, T 
+
+#printa temperaturerna i en lista
+A, x, b, T = stavens_temperatur(N, q, k, TL, TR, L)
+print("Stavens temperatur beräknat på",N+1,"stycken punkter är\n", T)
+
+# T2d) KLAR
+#Få fram A, x och b för N=100 istället.
+A_T2d, x_T2d, b_T2d, T_T2d = stavens_temperatur(100, q, k, TL, TR, L)
+#A_T2d systemmatrisen 99*99 för de inre punkterna
+#x_T2d alla x koordinaterna där randvärderna är inkluderade
+#b_T2d b för de inre punkterna
+#T_T2d temperaturen där randvärderna är inkluderade
+
+#Skriv funktionen som plottar temperaturfördelningen
+def plotta_stavens_temperatur(x,T): 
+    #x = vad som ska vara på x-axeln
+    #T = vad som ska vara på y-axeln (som ska vara temperaturen)
+    plt.plot(x, T, '-o', markersize=2.5) #markersize ändrar punkternas storlek
+    plt.title("Stavens temperaturfördelning (N=100)")
+    plt.xlabel("x")
+    plt.ylabel("T(x), temperaturen")
+    plt.grid(True) #Visar hjälplinjerna
+
+#kalla på funktionen som plottar
+plotta_stavens_temperatur(x_T2d,T_T2d)
+
+#Printa vad temperaturen uppskattas vara i x=0.2
+for idx, element in enumerate(x_T2d):
+    #https://stackoverflow.com/questions/522563/how-can-i-access-the-index-value-in-a-for-loop
+    if element == 0.2:
+        print("Stavens temperatur i x=0.2 är", T_T2d[idx])
 
 # T2e)
+
 # Gör konvergensstudie med steglängdshalvering.
+
+#Antal delintervall i lista, börja på N=50
+N = [50, 100, 200, 400, 800, 1600]
+
+T_jamforelsevarde_noll_sju_avrundat= 1.6379544
+
 
 # T2f)
 # Testa att ändra randvillkoren och se om det ändras.
+
+
+
+
+
+
