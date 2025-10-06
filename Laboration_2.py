@@ -20,62 +20,93 @@ import scipy.integrate as integrate
 
 """Följande är svar på fråga F1"""
 # F1a)
-# Vi ska rita riktiningsfältet för DE och lägg till den exakta lösningen till ekvationen
 
+#Skapar en funktion för att rensa konsolen
 def console_clear():
     os.system('clear')
 
-def plot_quiver(x_range, y_range, u_func, v_func, density=20, scale=1, title="Quiver Plot"):
-    """
-    Plots a quiver plot of a vector field defined by u_func and v_func.
+#skapa den exakta lösningen
+def y_exakt(t):
+    return np.exp(-t)+t
 
-    Parameters:
-    - x_range: tuple (xmin, xmax)
-    - y_range: tuple (ymin, ymax)
-    - u_func, v_func: functions of (x, y) returning vector components
-    - density: number of arrows along each axis
-    - scale: scale factor for arrows
-    - title: title of the plot
-    """
-    x = np.linspace(x_range[0], x_range[1], density)
-    y = np.linspace(y_range[0], y_range[1], density)
-    X, Y = np.meshgrid(x, y)
+#differentialekvationen y' = dy/dt = 1+t-y = f(t,y) enligt uppgiften (tidigare v)
+def f(t,y):
+    return 1+t-y
 
-    U = u_func(X, Y)
-    V = v_func(X, Y)
-
-    plt.figure(figsize=(6, 6))
-    plt.quiver(X, Y, U, V, scale=scale)
-    plt.title(title)
-    plt.xlabel("x")
-    plt.ylabel("y")
-    plt.axis("equal")
-    plt.grid(True)
-    plt.show()
-
-# Plotting the vector field F(x,y) = (-y,x)
-# Define the vector field functions
-# def u(x, y):
-#     return -y
-
-# def v(x, y):
-#     return x
-
-
-# Plotting riktningsfältet till dydx = x - y
-# Vector field is: F(x,y) = (1,x-y)
-def u(x, y):
+#t' = dt/dt = 1 = t_prim(t,y). (tidigare u)
+def t_prim(t, y):
     return 1
 
+#Skapa en konstant T eftersom t ∈ [0, T]
+T = 1.2
 
-def v(x, y):
-    return x-y
+#definiera axlarna på plottens start och slutpunkt
+t_start_slut=(0, 2*T)
+y_start_slut=(0, 2*T)
+
+#Skapa ett riktningsfält (plott_quiver = plotta_riktningsfalt) som ges av F(t,y) = (1,f(t,y))
+def plotta_riktningsfalt(t_start_slut, y_start_slut, t_prim, f, tathet=20, scale = 50, titel = "Riktningsfält"):
+    #(x_range, y_range, u_func, v_func, density=20, scale=1, title="Quiver Plot" ändras)
+    #t_start_slut = tupel (t_min, t_max)
+    #y_start_slut = tupel (y_min, y_max)
+    #t_prim = t'
+    #f = y'
+    #tathet = 20 = antal pilar per axel
+    #scale = 1 = pilarnas skalfaktor, desto högre siffra desto kortare
+    #title = "..." titeln
+    
+    #skapa ett rutnät med punkter
+    t_axel = np.linspace(t_start_slut[0], t_start_slut[-1], tathet)
+    y_axel = np.linspace(y_start_slut[0], y_start_slut[-1], tathet)
+    #(starpunkt, slutpunk, antal punkter)
+    t, y = np.meshgrid(t_axel, y_axel)
+    #t_axel vektorn som består av massa punkter
+    #y_axel består av massa punkter
+    #np.meshgrid skapar en matris av dessa 
+    
+    #få fram riktning per axel
+    U = t_prim(t, y)
+    V = f(t, y)
+
+    #plotta figuren
+    plt.figure(figsize=(6, 6))
+    plt.quiver(t, y, U, V, scale=None)
+    
+    #döper den röda exakta 
+    t_rod = np.linspace(0, 2*T, 200)
+    y_rod = y_exakt(t_rod)
+    plt.plot(t_rod, y_rod, 'r', linewidth=2, label="Exakt lösning")
+    plt.legend()
+    
+    #plottens titel
+    plt.title(titel)
+    
+    #axelrubrikerna
+    plt.xlabel("t")
+    plt.ylabel("y")
+    
+    #lika avstånd på axklarna
+    plt.axis("equal")
+    
+    #svaga bakgrundsstreck
+    plt.grid(True)
+    
+    #visa plotten
+    plt.show()
 
 
+
+#Menyfunktion, kalla på funktionerna
 def main_F1a():
-    # Call the function
-    plot_quiver(x_range=(0, 1), y_range=(0, 1), u_func=u, v_func=v,
-                density=20, scale=50, title="Riktningsfält")
+    plotta_riktningsfalt(t_start_slut, y_start_slut, 
+                         t_prim, f, tathet=20, scale=50, 
+                         titel = "Riktningsfältet med den exakta lösningen")
+
+main_F1a()
+
+
+
+
 
 
 # F1b)
@@ -125,9 +156,8 @@ def get_table(tsol, ysol, h):
     print(df)
 
 
-def y_exakt(t):
-    return np.exp(-t)+t
-
+# F1c)
+# Verifiera att felet blir Ek = |yk(T)−yexakt(T)| ≈ 0.0188
 
 def main_F1b():
     a = 0
@@ -161,11 +191,19 @@ def main_F1b():
     plt.show()
 
 
-main_F1a()
+
 main_F1b()
 
-# F1c)
-# Verifiera att felet blir ek = |yk(T)−yexakt(T)| ≈ 0.0188
+
+
+
+
+
+
+
+
+
+
 
 
 # -----------------------------------------------------------------------------------------------------------------
@@ -412,6 +450,76 @@ T1_e()
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # -----------------------------------------------------------------------------------------------------------------
 """Följande är svar på fråga T1"""
 # T2a, b och c) KLAR
@@ -568,10 +676,9 @@ for i in range(len(N_T2e)-1): #vi sätter minus 1 för att garantera att det fin
 
 
 
-
-
 # T2f) KLAR
 #Testa att ändra randvillkoren TL och TR och se om det ändras.
 #Vi ser att det ändras
+print("\nVi ser att randvillkoren ändrar temperaturfördelningen")
 #Det är ändå en konvex struktur.
 
