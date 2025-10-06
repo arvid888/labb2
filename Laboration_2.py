@@ -115,30 +115,26 @@ main_F1a()
 # Plotta den numeriska lösningsvektorn som funktion av tiden
 
 
-def dydt(t, y):
-    return 1+t-y
-
-
-def euler_forward_h(f, a, b, y0, h):
+def euler_framat(f, a, b, y0, h):
 
     n = round(np.abs(b-a)/h)
     print(n)
-    # Diskretiseringsteg: Generate n+1 friddpunkter
+    
+    # Diskretiseringsteg: Generera n+1 friddpunkter
     t = np.linspace(a, b, n+1)
     y = np.zeros(n+1)
 
     # Begynnelsevillkor
     y[0] = y0
 
-    # Iterate med Eulers framåt. Formler EF.1
+    # Iterera med Eulers framåt. Formler EF.1
     # Modul 6 Del 2
     for k in range(n):
         y[k+1] = y[k] + h*f(t[k], y[k])
-
     return t, y
 
 
-def get_table(tsol, ysol, h):
+def skapa_tabell(tsol, ysol, h):
 
     yexakt = y_exakt(tsol)
     Ek_global = np.abs(ysol-yexakt)
@@ -148,11 +144,7 @@ def get_table(tsol, ysol, h):
     tabell = {"Steg: tk": tsol,
               "yk": ysol
               }
-
-    # Datatable
-    # DT = dt.Frame(tabell)
     df = pd.DataFrame(tabell)
-
     print(df)
 
 
@@ -165,7 +157,7 @@ def main_F1b():
     y0 = 1
     h = 0.1
     # a)
-    ta, ya = euler_forward_h(dydt, a, b, y0, h)
+    ta, ya = euler_framat(f, a, b, y0, h)
     print("ya")
     print(ya[-1])
     print("ta")
@@ -174,11 +166,11 @@ def main_F1b():
     Ek = np.abs(ya[-1]-yexakt)
     print(Ek)
     # plotta_solution(ta,ya,h)
-    # get_table(ta, ya, h)
+    # skapa_tabell(ta, ya, h)
 
     # f = lambda t, y: -y      #Definera en lambda funktion (=inline function)
 
-    sol = integrate.solve_ivp(dydt, [0, 2], [0], t_eval=np.linspace(0, 2, 50))
+    sol = integrate.solve_ivp(f, [0, 2], [0], t_eval=np.linspace(0, 2, 50))
     print(" ")
     print(sol.t)
     print(sol.y)
@@ -195,25 +187,11 @@ def main_F1b():
 main_F1b()
 
 
-
-
-
-
-
-
-
-
-
-
-
 # -----------------------------------------------------------------------------------------------------------------
 """Följande är svar på fråga F2"""
-# F2a)
+# F2a, b och c)
 # Gör en konvergensstudie genom att ha h och beräkna numerisk lösning med Eulers metod framåt
 # Spara lösningen för varje h i y(T)
-
-# h = np.array([0.2, 0.1, 0.05, 0.025, 0.0125])
-
 
 def main_f2():
     fel_lista = []
@@ -222,8 +200,9 @@ def main_f2():
     b = 1.2
     y0 = 1
     h = 0.1
+    # Beräkna felen ek = |yk(T) − yexakt(T)| och verifiera att felen blir enligt facit
     for h in h_lista:
-        ta, ya = euler_forward_h(dydt, a, b, y0, h)
+        ta, ya = euler_framat(f, a, b, y0, h)
         yexakt = y_exakt(ta[-1])
         Ek = np.abs(ya[-1]-yexakt)
         fel_lista.append(Ek)
@@ -233,25 +212,16 @@ def main_f2():
 
     p_lista = []
 
+    # Beräkna nogrannhetsordningen empiriskt och jämför
     for i in range(len(fel_lista) - 1):
         ek_h = fel_lista[i]
         ek_h_halverad = fel_lista[i+1]
         p = np.log(ek_h / ek_h_halverad) / np.log(2)
         p_lista.append(p)
         print(p)
-
     # print(p_lista)
 
-
 main_f2()
-
-
-# F2b)
-# Beräkna felen ek = |yk(T) − yexakt(T)| och verifiera att felen blir enligt facit
-
-# F2c)
-# Beräkna nogrannhetsordningen empiriskt och jämför
-
 
 # -----------------------------------------------------------------------------------------------------------------
 """Följande är svar på fråga T1"""
@@ -299,8 +269,6 @@ def lös_ODE(R, L, C, t_span, Q0):
 
 # T1c)
 # Lös systemet med solve_ivp och metoden RK45 för dämpad  och odämpad svängning
-
-
 def main_T1_c():
 
     t_span = [0, 20]
@@ -319,7 +287,6 @@ main_T1_c()
 
 # T1d)
 # Dela tidsintervallet och plotta lösningen för varje värde på N.
-
 
 def euler_system_forward_h(F, t0, tend, U0, h,R,L,C):
     """ 
@@ -420,106 +387,6 @@ T1_e()
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # -----------------------------------------------------------------------------------------------------------------
 """Följande är svar på fråga T1"""
 # T2a, b och c) KLAR
@@ -578,14 +445,6 @@ print("b värden:\n", b)
 print("Stavens temperatur beräknat på",N+1,"stycken punkter är: \n",T)
 
 
-
-
-
-
-
-
-
-
 # T2d) KLAR
 #Få fram A, x och b för N=100 istället.
 A_T2d, x_j_T2d, x_T2d, b_T2d, T_T2d = stavens_temperatur(100, q, k, TL, TR, L)
@@ -612,14 +471,6 @@ for idx, element in enumerate(x_T2d):
     #https://stackoverflow.com/questions/522563/how-can-i-access-the-index-value-in-a-for-loop
     if element == 0.2:
         print("Stavens temperatur i x = 0.2 är", T_T2d[idx])
-
-
-
-
-
-
-
-
 
 
 # T2e) KLAR
@@ -669,11 +520,6 @@ for i in range(len(N_T2e)-1): #vi sätter minus 1 för att garantera att det fin
         p = np.log(felen[i] / felen[i+1]) / np.log(2)
         print("Vi jämför värden från", N_T2e[i], "och", N_T2e[i+1], "st delintervall som ger p ≈",p)
         #nogrannhetsordningen verkar stämma väl överens med teorin. 
-
-
-
-
-
 
 
 # T2f) KLAR
