@@ -387,7 +387,7 @@ T1_e()
 
 
 # -----------------------------------------------------------------------------------------------------------------
-"""Följande är svar på fråga T1"""
+"""Följande är svar på fråga T2"""
 # T2a, b och c) KLAR
 def q(x): #Enligt uppgiften
     return 50 * (x**3) * np.log(x + 1)
