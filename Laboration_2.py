@@ -227,23 +227,22 @@ main_f2()
 """Följande är svar på fråga T1"""
 # T1a)
 # Gör en differentialekvation till en LCR krets genom att skriva om ekvation 2 till y´= F(t,y)
-# Liknande frågor kommer i elektroteknik
-
-print("hej")
 
 # T1b)
 
+#Skriv differentialekvationen
 def diffekvation_2(t, y, R, L, C):
+    # t, y, R, L, C är inparametrar. Funktionen returnerar vektorn F(t, y).
     q = y[0]  # detta är för solve_ivp
     i = y[1]  # första derivatan
 
     q_prim = i
-    i_prim = -(R/L)*i-(1/L*C)*q
+    i_prim = -(R/L)*i-(1/(L*C))*q
 
     return np.array([q_prim, i_prim])
-# t, y, R, L, C är inparametrar. Funktionen returnerar vektorn F(t, y). Man ska inte kunna använda ode-lösare solve_ivp
 
 
+#
 def my_ode(t, y):
     """
     Definierar den ordinära differentialekvationen dy/dt = -2y.
