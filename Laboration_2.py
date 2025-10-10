@@ -62,11 +62,11 @@ def plotta_riktningsfalt(t_start_slut, y_start_slut, t_prim, f, tathet=20, scale
     t, y = np.meshgrid(t_axel, y_axel)
     #t_axel vektorn som består av massa punkter
     #y_axel består av massa punkter
-    #np.meshgrid skapar en matris av dessa 
+    #np.meshgrid skapar en matris av dessa
     
     #få fram riktning per axel
-    U = t_prim(t, y)
-    V = f(t, y)
+    U = t_prim(t, y) #pekar i t-led
+    V = f(t, y) #pekar i y-led
 
     #plotta figuren
     plt.figure(figsize=(6, 6))
@@ -94,8 +94,6 @@ def plotta_riktningsfalt(t_start_slut, y_start_slut, t_prim, f, tathet=20, scale
     #visa plotten
     plt.show()
 
-
-
 #Menyfunktion, kalla på funktionerna
 def main_F1a():
     plotta_riktningsfalt(t_start_slut, y_start_slut, 
@@ -117,12 +115,12 @@ main_F1a()
 
 def euler_framat(f, a, b, y0, h):
 
-    n = round(np.abs(b-a)/h)
+    n = round(np.abs(b-a)/h) # totalaantalet steg
     print(n)
     
     # Diskretiseringsteg: Generera n+1 friddpunkter
-    t = np.linspace(a, b, n+1)
-    y = np.zeros(n+1)
+    t = np.linspace(a, b, n+1) #anger punkterna i t led i en lista
+    y = np.zeros(n+1) #alla y värden ska vara [0,0,0,0,0]
 
     # Begynnelsevillkor
     y[0] = y0
@@ -152,35 +150,23 @@ def skapa_tabell(tsol, ysol, h):
 # Verifiera att felet blir Ek = |yk(T)−yexakt(T)| ≈ 0.0188
 
 def main_F1b():
-    a = 0
-    b = 1.2
-    y0 = 1
-    h = 0.1
+    a = 0 #starttid
+    b = 1.2 #sluttid
+    y0 = 1 #värdet vid starttiden
+    h = 0.1 #steglängd
     # a)
     ta, ya = euler_framat(f, a, b, y0, h)
     print("ya")
     print(ya[-1])
     print("ta")
     print(ta[-1])
-    yexakt = y_exakt(ta[-1])
+    yexakt = y_exakt(ta[-1]) # ta = 1.2
     Ek = np.abs(ya[-1]-yexakt)
     print(Ek)
     # plotta_solution(ta,ya,h)
-    # skapa_tabell(ta, ya, h)
+    skapa_tabell(ta, ya, h)
 
     # f = lambda t, y: -y      #Definera en lambda funktion (=inline function)
-
-    sol = integrate.solve_ivp(f, [0, 2], [0], t_eval=np.linspace(0, 2, 50))
-    print(" ")
-    print(sol.t)
-    print(sol.y)
-    fig, ax = plt.subplots()
-    # sol.y är en matris, lösningen ges i första raden
-    ax.plot(sol.t, sol.y[0])
-    ax.set_xlabel('t', fontsize=14)
-    ax.set_ylabel('y(t)', fontsize=14)
-    ax.tick_params(labelsize=14)
-    plt.show()
 
 
 
@@ -237,34 +223,21 @@ def diffekvation_2(t, y, R, L, C):
     i = y[1]  # första derivatan
 
     q_prim = i
-    i_prim = -(R/L)*i-(1/(L*C))*q
+    i_prim = (-(R/L)*i)-((1/(L*C))*q)
 
     return np.array([q_prim, i_prim])
-
-
-#
-def my_ode(t, y):
-    """
-    Definierar den ordinära differentialekvationen dy/dt = -2y.
-    """
-    return -2 * y
 
 
 # 2. Definiera tidsintervall och initialvillkor
 t_span = (0, 5)
 y0 = [1]
 
-# 3. Löser ekvationen med solve_ivp
-sol = integrate.solve_ivp(my_ode, t_span, y0, dense_output=True)
-
 
 def lös_ODE(R, L, C, t_span, Q0):
-
+    #(resistansen, L induktans, C kapacitans, tidspannet, initial laddning)
     y0 = [Q0, 0]
-
     F = integrate.solve_ivp(diffekvation_2, t_span, y0, args=(R, L, C))
     return F
-
 
 # T1c)
 # Lös systemet med solve_ivp och metoden RK45 för dämpad  och odämpad svängning
@@ -442,7 +415,6 @@ print("A:\n", A)
 print("x värden:\n", x_j)
 print("b värden:\n", b)
 print("Stavens temperatur beräknat på",N+1,"stycken punkter är: \n",T)
-
 
 # T2d) KLAR
 #Få fram A, x och b för N=100 istället.
